@@ -6,6 +6,12 @@ Lists dialog nodes that use entities which do not exist, and entities that are n
 Designed for use with IBM’s [Watson Assistant](https://www.ibm.com/watson/ai-assistant/) (formerly IBM Watson Conversation Service). 
 
 
+Source
+------
+
+- [disconnected-entities.php](disconnected-entities.php), 7.06 KB
+
+
 Usage
 -----
 

@@ -42,7 +42,7 @@ Entities not used in any dialog:
 
 ### Via HTTP
 
-![Example output from the disconnected-entities.php script output in a web browser](disconnected-entities-example.png)
+<img alt="Example output from the disconnected-entities.php script output in a web browser" src="https://github.com/neatnik/watson-assistant-tools/raw/master/disconnected-entities-example.png" style="width: 500px; height: 383px;">
 
 
 Configuration

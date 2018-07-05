@@ -3,7 +3,7 @@ Watson Assistant Tools
 
 I’m working on a suite of simple tools that work with IBM’s [Watson Assistant](https://www.ibm.com/watson/ai-assistant/) (formerly IBM Watson Conversation Service). It’s not much a suite yet, though, as there’s only one tool so far:
 
-- [disconnected-entities](disconnected-entities-readme.md). Finds dialog nodes that use non-existent entities, and lists entities that aren't used in dialog conditions.
+- [disconnected-entities](disconnected-entities-readme.md): finds dialog nodes that use non-existent entities, and lists entities that aren't used in dialog conditions
 
 
 Legal

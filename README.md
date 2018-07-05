@@ -1,7 +1,12 @@
-disconnected-entities.php
-=========================
+Watson Assistant Tools
+======================
 
-Designed for use with IBM’s [Watson Assistant](https://www.ibm.com/watson/ai-assistant/) (formerly IBM Watson Conversation Service).
+I’m working on a suite of simple tools that work with IBM’s [Watson Assistant](https://www.ibm.com/watson/ai-assistant/) (formerly IBM Watson Conversation Service). It’s not much a suite yet, though, as there’s only one tool so far:
+
+
+disconnected-entities.php
+-------------------------
+
 Lists dialog nodes that use entities which do not exist, and entities that are not used by any dialog nodes.
 
 
@@ -55,5 +60,7 @@ Optionally, you can also set **ASSISTANT_URL** (and uncomment the line) to enabl
 
 Legal
 -----
+
+Copyright (c) 2018 Neatnik LLC. This software is distributed under the terms of the [MIT License](LICENSE).
 
 IBM Watson® is a registered trademark of IBM Corporation.

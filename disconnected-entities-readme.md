@@ -9,7 +9,13 @@ Designed for use with IBM’s [Watson Assistant](https://www.ibm.com/watson/ai-a
 Source
 ------
 
-- [disconnected-entities.php](disconnected-entities.php), 7.06 KB
+- [disconnected-entities.php](disconnected-entities.php), 8 KB
+
+
+Demo
+----
+
+[https://neatnik.net/watson/assistant/utilities/disconnected-entities.php](https://neatnik.net/watson/assistant/utilities/disconnected-entities.php)
 
 
 Usage

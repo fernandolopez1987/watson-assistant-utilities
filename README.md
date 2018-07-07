@@ -1,5 +1,5 @@
-Watson Assistant Tools
-======================
+Watson Assistant Utilities
+==========================
 
 I’m working on a suite of simple tools that work with IBM’s [Watson Assistant](https://www.ibm.com/watson/ai-assistant/) (formerly the Watson Conversation Service). There are two so far:
 

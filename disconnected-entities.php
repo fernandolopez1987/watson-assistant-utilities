@@ -14,8 +14,8 @@ Metadata
 
 | Data       | Value                            |
 | ----------:| -------------------------------- |
-|    Version | 1.0                              |
-|    Updated | 2018-07-05T04:11:28+00:00        |
+|    Version | 1.0.1                            |
+|    Updated | 2018-07-07T06:12:52+00:00        |
 |     Author | Adam Newbold, https://adam.lol   |
 | Maintainer | Neatnik LLC, https://neatnik.net |
 |   Requires | PHP 5.6 or 7.0+ with curl        |
@@ -23,6 +23,10 @@ Metadata
 
 Changelog
 ---------
+
+### 1.0.1
+
+ * Fixed a bug where multiple missing entities associated with the same node would not all be shown
 
 ### 1.0
 
@@ -167,14 +171,18 @@ else echo "\n";
 
 foreach($diff as $entity) {
 	foreach($dialog_ids[$entity] as $node) {
-		$missing_entities[$node] = $entity;
+		$missing_entities[$node][] = $entity;
 	}
 }
+
 asort($missing_entities);
-foreach($missing_entities as $node => $entity) {
+foreach($missing_entities as $node => $array) {
 	$node_info = defined('ASSISTANT_URL') ? '<a href="'.ASSISTANT_URL.'/'.WORKSPACE.'/build/dialog#node='.$node.'"><i class="fas fa-external-link-alt"></i></a>' : 'in '.$node;
-	if($http) echo '<li><strong>'.$node_titles[$node].'</strong> uses <strong>'.$entity.'</strong> '.$node_info.'</li>';
-	else echo "\n".'  - "'.$node_titles[$node].'" uses '.$entity.' in '.$node;
+	$array = array_count_values($array);
+	foreach($array as $entity => $k) {
+		if($http) echo '<li><strong>'.$node_titles[$node].'</strong> uses <strong>'.$entity.'</strong> '.$node_info.'</li>';
+		else echo "\n".'  - "'.$node_titles[$node].'" uses '.$entity.' in '.$node;
+	}
 }
 
 if($http) echo '</ul>';

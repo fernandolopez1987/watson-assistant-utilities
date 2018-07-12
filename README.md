@@ -1,8 +1,9 @@
 Watson Assistant Utilities
 ==========================
 
-I’m working on a suite of simple tools that work with IBM’s [Watson Assistant](https://www.ibm.com/watson/ai-assistant/) (formerly the Watson Conversation Service). There are two so far:
+I’m working on a suite of simple tools that work with IBM’s [Watson Assistant](https://www.ibm.com/watson/ai-assistant/) (formerly the Watson Conversation Service). There are three so far:
 
+- [entity-renamer](entity-renamer-readme.md): renames entities wherever they’re used, across all dialog conditions
 - [dialog-debugger](dialog-debugger-readme.md): displays specific entity, intent, and dialog node information for inputs to your workspace, which can help in debugging unexpected dialog
 - [disconnected-entities](disconnected-entities-readme.md): finds dialog nodes that use non-existent entities, and lists entities that aren't used in dialog conditions
 

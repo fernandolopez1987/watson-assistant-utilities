@@ -13,7 +13,7 @@ Metadata
 
 | Data       | Value                            |
 | ----------:| -------------------------------- |
-|    Version | 1.0                             |
+|    Version | 1.0                              |
 |    Updated | 2018-07-15T18:36:42+00:00        |
 |     Author | Adam Newbold, https://adam.lol   |
 | Maintainer | Neatnik LLC, https://neatnik.net |

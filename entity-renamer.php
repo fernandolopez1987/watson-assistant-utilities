@@ -13,8 +13,8 @@ Metadata
 
 | Data       | Value                            |
 | ----------:| -------------------------------- |
-|    Version | 1.0                              |
-|    Updated | 2018-07-12T04:15:40+00:00        |
+|    Version | 1.0.1                            |
+|    Updated | 2018-07-27T06:35:29+00:00        |
 |     Author | Adam Newbold, https://adam.lol   |
 | Maintainer | Neatnik LLC, https://neatnik.net |
 |   Requires | PHP 5.6 or 7.0+ with curl        |
@@ -22,6 +22,11 @@ Metadata
 
 Changelog
 ---------
+
+### 1.0.1
+
+ * Fixed a bug in the assistant_api() function that caused it not to call itself properly when fetching paginated data from the API
+ * Updated the default API version value to 2018-07-10
 
 ### 1.0
 
@@ -68,7 +73,7 @@ IBM Watson® is a registered trademark of IBM Corporation.
 define('WORKSPACE', 'change_me'); // Usually 36 characters, e.g. 1c7fbde9-102e-4164-b127-d3ffe2e58a04
 define( 'USERNAME', 'change_me'); // Usually 36 characters, e.g. febeea03-84c4-57cb-af25-5f44b7af1f05
 define( 'PASSWORD', 'change_me'); // Usually 12 characters, e.g. xCkZnpPbxLkQ
-define(  'VERSION', '2018-02-16'); // The ISO 8601 date of the API version; you probably don't need to change this
+define(  'VERSION', '2018-07-10'); // The ISO 8601 date of the API version; you probably don't need to change this
 
 
 # Main code begins here
@@ -147,7 +152,7 @@ function assistant_api($method, $return_data = false) {
 	}
 	
 	if(isset($object->pagination->next_url)) {
-		watson($object->pagination->next_url);
+		assistant_api($object->pagination->next_url);
 	}
 	else {
 		return $entities;

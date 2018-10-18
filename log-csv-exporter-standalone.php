@@ -78,9 +78,9 @@ function assistant_api($method) {
 		CURLOPT_USERPWD => $username.':'.$password,
 		CURLOPT_RETURNTRANSFER => true,
 		CURLOPT_FAILONERROR, true,
-       // CURLOPT_SSL_VERIFYPEER, true,
-        //CURLOPT_SSL_VERIFYHOST, 2,
-        //CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1
+		//CURLOPT_SSL_VERIFYPEER, true,
+		//CURLOPT_SSL_VERIFYHOST, 2,
+		//CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1
 	));
 	$response = curl_exec($curl);
 	if(curl_error($curl)) $error_msg = curl_error($curl);

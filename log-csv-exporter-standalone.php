@@ -25,7 +25,6 @@ Changelog
 
 ### 1.1
 
- * Added service endpoint selection
  * Added date range selection to UI
  * Added real-time progress tracking of API operations
    (Note that different browsers will handle output buffering differently, but this has been confirmed working in Chrome 72.0.3626.121)
@@ -113,7 +112,7 @@ function assistant_api($method) {
 	global $version;
 	global $username;
 	global $password;
-	$url = 'https://gateway.watsonplatform.net/assistant/api'.$method;
+	$url = $_SESSION['service_endpoint'].$method;
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
 		CURLOPT_URL => $url,
@@ -181,11 +180,10 @@ $response_timestamp_end = date('Y-m-d\TH:i:s\Z', strtotime($end));
 $filter = 'response_timestamp>='.$response_timestamp_start.',response_timestamp<='.$response_timestamp_end;
 
 if(isset($_REQUEST['export'])) {
+	$_SESSION['service_endpoint'] = $_REQUEST['service_endpoint'];
 	echo '<pre style="background: #333; color: #ccc; padding: 1em; font-size: 1.2em; border-radius: .2em;">';
-	
 	output("Starting API calls. When all calls have finished, the button to export your data will appear below these messages.");
 	assistant_api('/v1/workspaces/'.$workspace.'/logs?version='.$version.'&page_limit=500&export=true&include_audit=true&filter='.rawurlencode($filter), true);
-	
 	output("Finished fetching data. Export ready.");
 	
 	$out = "Timestamp,Conversation ID,Turn,Input,Output,Intent,Confidence,Entities\n";

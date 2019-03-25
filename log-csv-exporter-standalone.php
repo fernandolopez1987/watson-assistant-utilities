@@ -25,10 +25,10 @@ Changelog
 
 ### 1.1
 
+ * Added service endpoint selection
  * Added date range selection to UI
  * Added real-time progress tracking of API operations
    (Note that different browsers will handle output buffering differently, but this has been confirmed working in Chrome 72.0.3626.121)
- * Added local caching of exported data
 
 ### 1.0
 
@@ -239,6 +239,18 @@ if(!is_writable(dirname(__FILE__))) {
 
 <h2>API Connection</h2>
 
+<p>
+<label for="service_endpoint">Service Endpoint</label><br>
+<select name="service_endpoint">
+<option value="https://gateway.watsonplatform.net/assistant/api">Dallas</option>
+<option value="https://gateway-wdc.watsonplatform.net/assistant/api">Washington, DC</option>
+<option value="https://gateway-fra.watsonplatform.net/assistant/api">Frankfurt</option>
+<option value="https://gateway-syd.watsonplatform.net/assistant/api">Sydney</option>
+<option value="https://gateway-tok.watsonplatform.net/assistant/api">Tokyo</option>
+<option value="https://gateway-lon.watsonplatform.net/assistant/api">London</option>
+</select>
+</p>
+
 <p><label for="workspace">Workspace ID</label><br>
 <input type="text" name="workspace" placeholder="1c7fbde9-102e-4164-b127-d3ffe2e58a04" value="<?php echo $workspace; ?>"></p>
 
@@ -331,10 +343,21 @@ form p {
 	margin-top: 2em;
 }
 
-input {
+input, select {
 	border-bottom: 1px solid #666;
 	border-radius: 0;
 	width: 20em;
+}
+
+select {
+	margin-top: .5em;
+	border: 1px solid #666;
+	border-radius: .2em;
+	padding: .2em 0 .2em .6em;
+}
+
+select:hover {
+	cursor: pointer;
 }
 
 section {

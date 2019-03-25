@@ -28,6 +28,7 @@ Changelog
  * Added date range selection to UI
  * Added real-time progress tracking of API operations
    (Note that different browsers will handle output buffering differently, but this has been confirmed working in Chrome 72.0.3626.121)
+ * Added local caching of exported data
 
 ### 1.0
 

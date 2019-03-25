@@ -13,8 +13,8 @@ Metadata
 
 | Data       | Value                            |
 | ----------:| -------------------------------- |
-|    Version | 1.0                              |
-|    Updated | 2018-10-18T12:27:10+00:00        |
+|    Version | 1.1                              |
+|    Updated | 2019-03-25T03:11:42+00:00        |
 |     Author | Adam Newbold, https://adam.lol   |
 | Maintainer | Neatnik LLC, https://neatnik.net |
 |   Requires | PHP 5.6 or 7.0+, curl            |
@@ -22,6 +22,12 @@ Metadata
 
 Changelog
 ---------
+
+### 1.1
+
+ * Added date range selection to UI
+ * Added real-time progress tracking of API operations
+   (Note that different browsers will handle output buffering differently, but this has been confirmed working in Chrome 72.0.3626.121)
 
 ### 1.0
 
@@ -31,7 +37,7 @@ Changelog
 License
 -------
 
-Copyright (c) 2018 Neatnik LLC
+Copyright (c) 2019 Neatnik LLC
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -59,10 +65,45 @@ IBM Watson® is a registered trademark of IBM Corporation.
 
 */
 
+session_start();
+
+$_SESSION['timer'] = 0;
+
 $workspace = isset($_REQUEST['workspace']) ? $_REQUEST['workspace'] : null;
 $username = isset($_REQUEST['username']) ? $_REQUEST['username'] : null;
 $password = isset($_REQUEST['password']) ? $_REQUEST['password'] : null;
 $version = isset($_REQUEST['version']) ? $_REQUEST['version'] : '2018-09-20';
+
+header('Content-type: text/html; charset=utf-8');
+@apache_setenv('no-gzip', 1);
+@ini_set('zlib.output_compression', 0);
+@ini_set('implicit_flush', 1);
+for ($i = 0; $i < ob_get_level(); $i++) { ob_end_flush(); }
+ob_implicit_flush(1);
+
+function _ago($tm, $rcs = 0) {
+	$cur_tm = time(); $dif = $cur_tm-$tm;
+	$pds = array('second','minute','hour','day','week','month','year','decade');
+	$lngh = array(1,60,3600,86400,604800,2630880,31570560,315705600);
+	for($v = sizeof($lngh)-1; ($v >= 0)&&(($no = $dif/$lngh[$v])<=1); $v--); if($v < 0) $v = 0; $_tm = $cur_tm-($dif%$lngh[$v]);
+	$no = floor($no); if($no <> 1) $pds[$v] .='s'; $x=sprintf("%d %s ",$no,$pds[$v]);
+	if(($rcs == 1)&&($v >= 1)&&(($cur_tm-$_tm) > 0)) $x .= time_ago($_tm);
+	return $x;
+}
+
+function output($text) {
+	if($_SESSION['timer'] == 0) {
+		$_SESSION['timer'] = time();
+		$timer = "[Starting timer]";
+	}
+	else {
+		$elapsed = _ago($_SESSION['timer']);
+		$timer = "[Elapsed time: $elapsed]";
+	}
+	echo "### $text\n### $timer\n\n";
+	@flush();
+	@ob_flush();
+}
 
 if(isset($_REQUEST['style'])) goto style;
 
@@ -82,9 +123,11 @@ function assistant_api($method) {
 		//CURLOPT_SSL_VERIFYHOST, 2,
 		//CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1
 	));
+	output('Fetching data from API...');
 	$response = curl_exec($curl);
 	if(curl_error($curl)) $error_msg = curl_error($curl);
 	curl_close($curl);
+	output('Fetched '.number_format(strlen($response)).' bytes.');
 	
 	if(isset($error_msg)) die('<pre>'.$error_msg);
 	$object = json_decode($response);
@@ -124,19 +167,26 @@ function assistant_api($method) {
 	}
 	
 	if(isset($object->pagination->next_cursor)) {
+		output('Following API pagination cursor...');
 		$method = str_replace('?version='.$version, '?cursor='.$object->pagination->next_cursor.'&version='.$version, $method);
 		assistant_api($method);
 	}
 }
 
-$start = isset($_REQUEST['start']) && $_REQUEST['start'] !== '' ? $_REQUEST['start'] : '3 days ago';
+$start = isset($_REQUEST['start']) && $_REQUEST['start'] !== '' ? $_REQUEST['start'] : '1 week ago';
 $end = isset($_REQUEST['end']) && $_REQUEST['end'] !== '' ? $_REQUEST['end'] : 'now';
 $response_timestamp_start = date('Y-m-d\TH:i:s\Z', strtotime($start));
 $response_timestamp_end = date('Y-m-d\TH:i:s\Z', strtotime($end));
 $filter = 'response_timestamp>='.$response_timestamp_start.',response_timestamp<='.$response_timestamp_end;
 
 if(isset($_REQUEST['export'])) {
+	echo '<pre style="background: #333; color: #ccc; padding: 1em; font-size: 1.2em; border-radius: .2em;">';
+	
+	output("Starting API calls. When all calls have finished, the button to export your data will appear below these messages.");
 	assistant_api('/v1/workspaces/'.$workspace.'/logs?version='.$version.'&page_limit=500&export=true&include_audit=true&filter='.rawurlencode($filter), true);
+	
+	output("Finished fetching data. Export ready.");
+	
 	$out = "Timestamp,Conversation ID,Turn,Input,Output,Intent,Confidence,Entities\n";
 	$fp = fopen('php://temp', 'w+');
 	foreach ($export as $fields) {
@@ -145,11 +195,19 @@ if(isset($_REQUEST['export'])) {
 	rewind($fp); // Set the pointer back to the start
 	$out .= stream_get_contents($fp); // Fetch the contents of our CSV
 	fclose($fp); // Close our pointer and free up memory and /tmp space
+	
+	$filename = 'log-csv-export_'.date("Y-m-d-h-i-s").'.csv';
+	file_put_contents($filename, $out);
+	echo '</pre><a style="border: 2px solid #00884b; background: #cef3d1; color: #00884b; font-size: 1.2em; margin: 1em 0 1em 0; font-family: sans-serif; text-decoration: none; padding: .5em; border-radius: .2em;" href="'.$filename.'">Download exported data</a><br>&nbsp;';
+	
+	/*
 	header("Content-type: text/csv");
 	header("Content-Disposition: attachment; filename=log-csv_".date('c').".csv");
 	header("Pragma: no-cache");
 	header("Expires: 0");
 	echo $out;
+	*/
+	
 	exit;
 }
 
@@ -168,9 +226,19 @@ if(isset($_REQUEST['export'])) {
 
 <p>Fill in the form and click the button to export all available conversation log data from your workspace. Note that retrieving the data may take several moments.</p>
 
+<?php
+
+if(!is_writable(dirname(__FILE__))) {
+	echo '<p class="warning">This script does not have permission to write files to the directory in which it is running. Please adjust permissions to continue.</p>';
+}
+
+?>
+
 <form action="?" method="post">
 
-<p><label for="workspace">Workspace</label><br>
+<h2>API Connection</h2>
+
+<p><label for="workspace">Workspace ID</label><br>
 <input type="text" name="workspace" placeholder="1c7fbde9-102e-4164-b127-d3ffe2e58a04" value="<?php echo $workspace; ?>"></p>
 
 <p><label for="username">Username</label><br>
@@ -182,7 +250,15 @@ if(isset($_REQUEST['export'])) {
 <p><label for="version">API Version</label><br>
 <input type="text" name="version" placeholder="2018-09-20" value="<?php echo $version; ?>"></p>
 
-<p><button type="submit" name="export">Export to CSV</button></p>
+<h2>Export Options</h2>
+
+<p><label for="version">Start Date</label><br>
+<input type="text" name="start" placeholder="one week ago" value="<?php echo $start; ?>"></p>
+
+<p><label for="version">End Date</label><br>
+<input type="text" name="end" placeholder="now" value="<?php echo $end; ?>"></p>
+
+<p><button type="submit" name="export">Fetch Data</button></p>
 
 </form>
 
@@ -227,6 +303,10 @@ h1 {
 	font-size: 200%;
 }
 
+h2 {
+	font-size: 150%;
+}
+
 button {
 	display: inline-block;
 	background: #5392ff;
@@ -261,6 +341,17 @@ section {
 	clear: both;
 	color: #888;
 }
+
+.warning {
+	color: red;
+	background: #ffecec;
+	font-weight: bold;
+	border: 1px solid red;
+	border-radius: .2em;
+	padding: 1em;
+	display: inline-block;
+}
+
 <?php
 exit;
 ?>

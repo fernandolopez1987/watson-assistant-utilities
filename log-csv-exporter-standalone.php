@@ -13,7 +13,7 @@ Metadata
 
 | Data       | Value                            |
 | ----------:| -------------------------------- |
-|    Version | 1.1                              |
+|    Version | 1.1.1                            |
 |    Updated | 2019-03-25T03:11:42+00:00        |
 |     Author | Adam Newbold, https://adam.lol   |
 | Maintainer | Neatnik LLC, https://neatnik.net |
@@ -23,8 +23,13 @@ Metadata
 Changelog
 ---------
 
+### 1.1.1
+
+ * Adjusted data handling process to avoid memory issues (data is now appended to the export file with each API request made)
+
 ### 1.1
 
+ * Added service endpoint selection to UI
  * Added date range selection to UI
  * Added real-time progress tracking of API operations
    (Note that different browsers will handle output buffering differently, but this has been confirmed working in Chrome 72.0.3626.121)
@@ -166,6 +171,18 @@ function assistant_api($method) {
 		}
 	}
 	
+	// Write data fetched so far
+	$out = null;
+	$fp = fopen('php://temp', 'w+');
+	foreach ($export as $fields) {
+		fputcsv($fp, $fields);
+	}
+	rewind($fp); // Set the pointer back to the start
+	$out .= stream_get_contents($fp); // Fetch the contents of our CSV
+	fclose($fp); // Close our pointer and free up memory and /tmp space
+	file_put_contents($_SESSION['filename'], $out, FILE_APPEND);
+	$export = array(); // Clear array
+	
 	if(isset($object->pagination->next_cursor)) {
 		output('Following API pagination cursor...');
 		$method = str_replace('?version='.$version, '?cursor='.$object->pagination->next_cursor.'&version='.$version, $method);
@@ -180,24 +197,16 @@ $response_timestamp_end = date('Y-m-d\TH:i:s\Z', strtotime($end));
 $filter = 'response_timestamp>='.$response_timestamp_start.',response_timestamp<='.$response_timestamp_end;
 
 if(isset($_REQUEST['export'])) {
+	$_SESSION['filename'] = 'log-csv-export_'.date("Y-m-d-h-i-s").'.csv';
+	file_put_contents($_SESSION['filename'], "Timestamp,Conversation ID,Turn,Input,Output,Intent,Confidence,Entities\n");
+	
 	$_SESSION['service_endpoint'] = $_REQUEST['service_endpoint'];
 	echo '<pre style="background: #333; color: #ccc; padding: 1em; font-size: 1.2em; border-radius: .2em;">';
 	output("Starting API calls. When all calls have finished, the button to export your data will appear below these messages.");
 	assistant_api('/v1/workspaces/'.$workspace.'/logs?version='.$version.'&page_limit=500&export=true&include_audit=true&filter='.rawurlencode($filter), true);
 	output("Finished fetching data. Export ready.");
 	
-	$out = "Timestamp,Conversation ID,Turn,Input,Output,Intent,Confidence,Entities\n";
-	$fp = fopen('php://temp', 'w+');
-	foreach ($export as $fields) {
-		fputcsv($fp, $fields);
-	}
-	rewind($fp); // Set the pointer back to the start
-	$out .= stream_get_contents($fp); // Fetch the contents of our CSV
-	fclose($fp); // Close our pointer and free up memory and /tmp space
-	
-	$filename = 'log-csv-export_'.date("Y-m-d-h-i-s").'.csv';
-	file_put_contents($filename, $out);
-	echo '</pre><a style="border: 2px solid #00884b; background: #cef3d1; color: #00884b; font-size: 1.2em; margin: 1em 0 1em 0; font-family: sans-serif; text-decoration: none; padding: .5em; border-radius: .2em;" href="'.$filename.'">Download exported data</a><br>&nbsp;';
+	echo '</pre><a style="border: 2px solid #00884b; background: #cef3d1; color: #00884b; font-size: 1.2em; margin: 1em 0 1em 0; font-family: sans-serif; text-decoration: none; padding: .5em; border-radius: .2em;" href="'.$_SESSION['filename'].'">Download exported data</a><br>&nbsp;';	
 	
 	/*
 	header("Content-type: text/csv");

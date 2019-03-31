@@ -11,6 +11,6 @@ I’m working on a suite of simple tools that work with IBM’s [Watson Assistan
 Legal
 -----
 
-Copyright (c) 2018 Neatnik LLC. This software is distributed under the terms of the [MIT License](LICENSE).
+Copyright (c) 2019 Neatnik LLC. This software is distributed under the terms of the [MIT License](LICENSE).
 
 IBM Watson® is a registered trademark of IBM Corporation.

@@ -364,6 +364,11 @@ $main = <<<EOT
 
 </section>
 
+<section class="ok">
+<h2 style="color: #fff;">A note about privacy <i class="fas fa-lock-alt fa-2x fa-pull-right"></i></h2>
+<p>This service fully respects your privacy and data security. Your API credentials are held in a <strong>temporary session</strong>, which you can eliminate at any time by clicking on the <em>Disconnect</em> button or closing your browser window. No data is logged, and no trackers are in use.</p>
+</section>
+
 <section class="notice">
 <h2>This is a beta service <i class="fas fa-exclamation-triangle fa-2x fa-pull-right"></i></h2>
 <p>This service is in active development and may not work perfectly. Please <a style="color: #000;" href="https://github.com/neatnik/watson-assistant-utilities/issues">report any issues</a> that you encounter. By using this service, you agree that Neatnik LLC is not responsible for any issues that might arise related to its use. You should make a backup copy of your Assistant workspace/skill before using this service.</p>

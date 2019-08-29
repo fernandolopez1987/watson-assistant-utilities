@@ -356,7 +356,7 @@ $main = <<<EOT
 
 <h2>About the utilities</h2>
 
-<p>This is a collection of miscellaneous functions that enhance your use of Watson Assistant. These used to be <a href="https://github.com/neatnik/watson-assistant-utilities/archive">standalone scripts</a> but are now being brought together within a single hosted service.</p>
+<p>This is a collection of miscellaneous functions that enhance your use of Watson Assistant. These used to be <a href="https://github.com/neatnik/watson-assistant-utilities/tree/master/previous">standalone scripts</a> but are now being brought together within a single hosted service.</p>
 
 <p>To use the utilities, simply connect to your Watson Assistant skill or workspace using the form below.</p>
 
